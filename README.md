@@ -1,90 +1,157 @@
-🔐 QR Payment Verification — Secure QR-Based Payment Verifier
+# 🔐 QR Payment Verification — Secure QR-Based Payment Verifier
 
 <div align="center">
-Detect fraudulent QR codes and verify payments before you pay
 
-UPI Verification • Fraud Detection • URL Safety • Tamper-Proof QR
+**Detect fraudulent QR codes & verify payments before you tap "Pay"**
+
+*UPI Verification • Fraud Detection • URL Safety • Tamper-Proof QR*
+
+[![Made with HTML](https://img.shields.io/badge/Made%20with-HTML5-orange?logo=html5)](https://developer.mozilla.org/en-US/docs/Web/HTML)
+[![Made with CSS](https://img.shields.io/badge/Styled%20with-CSS3-blue?logo=css3)](https://developer.mozilla.org/en-US/docs/Web/CSS)
+[![Made with JS](https://img.shields.io/badge/Logic-JavaScript-yellow?logo=javascript)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![UPI](https://img.shields.io/badge/Supports-UPI%20QR-green?logo=googlepay)](https://www.npci.org.in/what-we-do/upi/product-overview)
+[![License](https://img.shields.io/badge/License-MIT-lightgrey)](#-license)
 
 </div>
 
-🎯 What is QR Payment Verification?
+---
 
-QR Payment Verification is a lightweight web-based tool that helps users scan and validate payment QR codes before completing a transaction. It checks UPI details, detects tampered or fraudulent QR codes, verifies the recipient's identity, and supports tamper-proof, digitally signed QR codes for safer merchant verification.
+## 🎯 What is QR Payment Verification?
 
-No more falling for fake payment screenshots or malicious QR codes — verify first, pay second.
+**QR Payment Verification** is a lightweight, fully client-side web tool built to fight one of the fastest-growing scams in digital payments — **fake or tampered QR codes**.
 
+Scammers swap genuine merchant QR codes with malicious ones, redirect payments to the wrong UPI ID, or send fake "payment successful" screenshots to dupe sellers. This tool lets you **scan, verify, and trust** a QR code *before* you complete a transaction — and helps merchants verify tamper-proof payment proofs *after*.
 
-✨ Key Features
+> ⚠️ **No more "Sorry, I sent it, check again" scams. Verify first, pay second.**
 
-FunctionHow It Works🔍 Scans & Validates QR CodesExtracts data (URL or UPI details) from the QR code and analyzes it for security issues🛡️ Prevents FraudDetects fraudulent or tampered QR codes before you complete the transaction✅ Verifies RecipientConfirms the UPI payee name matches the intended recipient🔏 Tamper-Proof ProofSupports digitally signed QR codes added to payment screenshots so merchants can verify authenticity
+---
 
+## ✨ Key Features
 
-🚀 Quick Start
+| Function | How It Works |
+|---|---|
+| 🔍 **Scan & Validate QR Codes** | Extracts embedded data (UPI intent string or URL) from any QR code and parses it for analysis |
+| 🛡️ **Fraud Detection** | Flags fraudulent, tampered, or known-scam QR patterns before you proceed with payment |
+| ✅ **Recipient Verification** | Cross-checks the UPI payee name (`pn`) against the UPI ID (`pa`) to confirm who you're *really* paying |
+| 🌐 **URL Safety Check** | Scans embedded URLs against suspicious-pattern heuristics to catch phishing redirects |
+| 🔏 **Tamper-Proof Receipts** | Validates digitally signed QR codes attached to payment screenshots, so merchants can confirm a transaction is genuine — not photoshopped |
 
-Prerequisites
+---
 
+## 🚀 Quick Start
 
-A modern web browser (Chrome, Firefox, Edge)
-No backend or server setup required — runs entirely client-side
+### Prerequisites
 
+- A modern web browser (Chrome, Firefox, Edge, Safari)
+- That's it — **no installs, no servers, no dependencies** 🎉
 
-Setup & Run
+### Setup & Run
 
-bash# 1. Clone the repository
+\`\`\`bash
+# 1. Clone the repository
 git clone https://github.com/your-username/qr-payment-verification.git
 cd qr-payment-verification
 
-# 2. Open in browser
-open index.html
+# 2. Open it in your browser
+open index.html        # macOS
+start index.html        # Windows
+xdg-open index.html      # Linux
+\`\`\`
 
-That's it — no build step, no dependencies to install!
+### Try it with sample QR codes
 
+Upload any image from the `test-qr-codes/` folder to see the verifier in action — including examples of safe UPI QRs, tampered QRs, and phishing-style QRs.
 
-🏗️ Project Structure
+---
 
+## 🏗️ Project Structure
+
+\`\`\`
 qr-payment-verification/
-├── index.html          # Main UI
-├── style.css           # Styling
-├── app.js              # Main logic
-├── upi-parser.js        # UPI QR parsing logic
-├── url-safety.js        # URL safety checker
-├── fraud-detection.js   # Fraud detection logic
-├── test-qr-codes/       # Test QR images folder
-└── README.md            # Documentation
+├── index.html           # Main UI
+├── style.css            # Styling & layout
+├── app.js               # Core application logic & UI controller
+├── upi-parser.js        # Parses UPI intent strings (pa, pn, am, etc.)
+├── url-safety.js         # Checks embedded URLs for phishing/red flags
+├── fraud-detection.js    # Cross-checks data against fraud heuristics
+├── test-qr-codes/        # Sample QR images for testing
+└── README.md             # Documentation
+\`\`\`
 
+---
 
-🛠️ Tech Stack
+## 🛠️ Tech Stack
 
-LayerTechnologyFrontendHTML, CSS, JavaScriptQR ParsingUPI Deep Link Parser (custom JS)Security ChecksURL Safety Checker, Fraud Detection EngineVerificationDigital Signature Validation (for tamper-proof QR)
+| Layer | Technology |
+|---|---|
+| **Frontend** | HTML5, CSS3, Vanilla JavaScript |
+| **QR Decoding** | Client-side QR image scanning |
+| **UPI Parsing** | Custom UPI deep-link parser (`upi://pay?...`) |
+| **Security Engine** | URL Safety Checker + Fraud Detection heuristics |
+| **Proof of Authenticity** | Digital signature validation for tamper-proof receipts |
 
+---
 
-📸 How It Works
+## 📸 How It Works
 
-User uploads/scans a QR code
-        ↓
-App extracts QR data (UPI ID, amount, payee name, or URL)
-        ↓
-URL Safety Checker scans for suspicious/malicious links
-        ↓
-Fraud Detection module checks for tampering & known scam patterns
-        ↓
-Recipient name is verified against UPI payee details
-        ↓
-User sees a clear safe/unsafe verdict before paying
+\`\`\`
+ 📷  User uploads or scans a QR code
+        │
+        ▼
+ 🧩  QR data is decoded → UPI intent string or raw URL
+        │
+        ▼
+ 🌐  url-safety.js checks for phishing / malicious link patterns
+        │
+        ▼
+ 🕵️  fraud-detection.js checks for tampering & known scam signatures
+        │
+        ▼
+ ✅  upi-parser.js verifies payee name (pn) matches UPI ID (pa)
+        │
+        ▼
+ 🚦  User sees a clear verdict:  SAFE ✅ | SUSPICIOUS ⚠️ | FRAUD ❌
+\`\`\`
 
+---
 
-🤝 Contributing
+## 🔮 Roadmap
 
-Contributions are welcome! Here's how:
+- [ ] Live camera-based QR scanning
+- [ ] Database of known scam UPI IDs (community-reported)
+- [ ] Browser extension version
+- [ ] Multi-language support
 
-bash# Fork the repo, then:
+---
+
+## 🤝 Contributing
+
+Contributions are welcome and appreciated! Here's how to get started:
+
+\`\`\`bash
+# 1. Fork the repo
+# 2. Create your feature branch
 git checkout -b feature/your-feature-name
-git commit -m "Add: your feature description"
-git push origin feature/your-feature-name
-# Open a Pull Request 🎉
 
+# 3. Commit your changes
+git commit -m "Add: your feature description"
+
+# 4. Push and open a Pull Request
+git push origin feature/your-feature-name
+\`\`\`
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — free to use, modify, and distribute.
+
+---
 
 <div align="center">
-⭐ Star this repo if it helped you stay safe from QR payment fraud!
+
+⭐ **If this project helped you spot a scam, star the repo and share it!** ⭐
+
+*Stay safe. Scan smart. Pay secure.*
 
 </div>
