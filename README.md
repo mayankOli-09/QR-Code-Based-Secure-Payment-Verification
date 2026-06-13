@@ -101,18 +101,23 @@ README.md             # Documentation
 ## 📸 How It Works
 
  📷  User uploads or scans a QR code
+ 
         │
         ▼
  🧩  QR data is decoded → UPI intent string or raw URL
+ 
         │
         ▼
  🌐  url-safety.js checks for phishing / malicious link patterns
+        
         │
         ▼
  🕵️  fraud-detection.js checks for tampering & known scam signatures
+        
         │
         ▼
  ✅  upi-parser.js verifies payee name (pn) matches UPI ID (pa)
+        
         │
         ▼
  🚦  User sees a clear verdict:  SAFE ✅ | SUSPICIOUS ⚠️ | FRAUD ❌
