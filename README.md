@@ -100,7 +100,6 @@ README.md             # Documentation
 
 ## 📸 How It Works
 
-\`\`\`
  📷  User uploads or scans a QR code
         │
         ▼
@@ -117,7 +116,6 @@ README.md             # Documentation
         │
         ▼
  🚦  User sees a clear verdict:  SAFE ✅ | SUSPICIOUS ⚠️ | FRAUD ❌
-\`\`\`
 
 ---
 
@@ -129,12 +127,6 @@ README.md             # Documentation
 - [ ] Multi-language support
 
 ---
-
-## 🤝 Contributing
-
-Contributions are welcome and appreciated! Here's how to get started:
-
-\`\`\`bash
 # 1. Fork the repo
 # 2. Create your feature branch
 git checkout -b feature/your-feature-name
