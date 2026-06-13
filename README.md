@@ -49,7 +49,7 @@ Scammers swap genuine merchant QR codes with malicious ones, redirect payments t
 
 \`\`\`bash
 # 1. Clone the repository
-git clone https://github.com/your-username/qr-payment-verification.git
+git clone: https://github.com/mayankOli-09/QR-Code-Based-Secure-Payment-Verification
 cd qr-payment-verification
 
 # 2. Open it in your browser
