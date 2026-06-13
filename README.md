@@ -67,15 +67,15 @@ Upload any image from the `test-qr-codes/` folder to see the verifier in action 
 ## 🏗️ Project Structure
 
 \`\`\`
-qr-payment-verification/
-├── index.html           # Main UI
-├── style.css            # Styling & layout
-├── app.js               # Core application logic & UI controller
-├── upi-parser.js        # Parses UPI intent strings (pa, pn, am, etc.)
-├── url-safety.js         # Checks embedded URLs for phishing/red flags
-├── fraud-detection.js    # Cross-checks data against fraud heuristics
-├── test-qr-codes/        # Sample QR images for testing
-└── README.md             # Documentation
+qr-payment-verification
+index.html           # Main UI
+style.css            # Styling & layout
+app.js               # Core application logic & UI controller
+upi-parser.js        # Parses UPI intent strings (pa, pn, am, etc.)
+url-safety.js         # Checks embedded URLs for phishing/red flags
+fraud-detection.js    # Cross-checks data against fraud heuristics
+test-qr-codes/        # Sample QR images for testing
+README.md             # Documentation
 \`\`\`
 
 ---
