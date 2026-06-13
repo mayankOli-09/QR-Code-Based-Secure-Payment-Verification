@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR Secure Payment Verification</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>QR Secure Payment Verification</h1>
+      <p>Scan a QR code to check UPI details, URL safety, and fraud risk.</p>
+    </header>
+
+    <main class="grid">
+      <section class="card">
+        <h2>Scanner</h2>
+        <div id="qr-reader"></div>
+        <div class="controls">
+          <input type="file" id="image-upload" accept="image/*" />
+          <button id="scan-btn">Start Scan</button>
+          <button id="stop-btn">Stop Scan</button>
+        </div>
+      </section>
+
+      <section class="card" id="results-card">
+        <h2>Verification Result</h2>
+        <div class="score-box">
+          <div class="score" id="score">0</div>
+          <div class="score-label">Trust Score</div>
+        </div>
+        <div class="badge" id="badge">UNKNOWN</div>
+        <div class="result-item"><strong>Decoded Data:</strong> <span id="decoded-data">-</span></div>
+        <div class="result-item"><strong>Payee Name:</strong> <span id="payee-name">-</span></div>
+        <div class="result-item"><strong>UPI ID:</strong> <span id="upi-id">-</span></div>
+        <div class="result-item"><strong>URL Safety:</strong> <span id="url-safety">-</span></div>
+        <div class="checks">
+          <h3>Security Checks</h3>
+          <ul id="checks-list"></ul>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="upi-parser.js"></script>
+  <script src="url-safety.js"></script>
+  <script src="fraud-detection.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
