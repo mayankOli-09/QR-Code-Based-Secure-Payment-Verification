@@ -66,7 +66,6 @@ Upload any image from the `test-qr-codes/` folder to see the verifier in action 
 
 ## 🏗️ Project Structure
 
-\`\`\`
 qr-payment-verification
 index.html           # Main UI
 
@@ -83,7 +82,7 @@ fraud-detection.js    # Cross-checks data against fraud heuristics
 test-qr-codes/        # Sample QR images for testing
 
 README.md             # Documentation
-\`\`\`
+
 
 ---
 
