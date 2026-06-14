@@ -10,7 +10,6 @@
 [![Made with CSS](https://img.shields.io/badge/Styled%20with-CSS3-blue?logo=css3)](https://developer.mozilla.org/en-US/docs/Web/CSS)
 [![Made with JS](https://img.shields.io/badge/Logic-JavaScript-yellow?logo=javascript)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![UPI](https://img.shields.io/badge/Supports-UPI%20QR-green?logo=googlepay)](https://www.npci.org.in/what-we-do/upi/product-overview)
-[![License](https://img.shields.io/badge/License-MIT-lightgrey)](#-license)
 
 </div>
 
