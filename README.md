@@ -37,32 +37,6 @@ Scammers swap genuine merchant QR codes with malicious ones, redirect payments t
 
 ---
 
-## 🚀 Quick Start
-
-### Prerequisites
-
-- A modern web browser (Chrome, Firefox, Edge, Safari)
-- That's it — **no installs, no servers, no dependencies** 🎉
-
-### Setup & Run
-
-\`\`\`bash
-# 1. Clone the repository
-git clone: https://github.com/mayankOli-09/QR-Code-Based-Secure-Payment-Verification
-cd qr-payment-verification
-
-# 2. Open it in your browser
-open index.html        # macOS
-start index.html        # Windows
-xdg-open index.html      # Linux
-\`\`\`
-
-### Try it with sample QR codes
-
-Upload any image from the `test-qr-codes/` folder to see the verifier in action — including examples of safe UPI QRs, tampered QRs, and phishing-style QRs.
-
----
-
 ## 🏗️ Project Structure
 
 qr-payment-verification
@@ -131,15 +105,6 @@ README.md             # Documentation
 - [ ] Multi-language support
 
 ---
-# 1. Fork the repo
-# 2. Create your feature branch
-git checkout -b feature/your-feature-name
-
-# 3. Commit your changes
-git commit -m "Add: your feature description"
-
-# 4. Push and open a Pull Request
-git push origin feature/your-feature-name
 \`\`\`
 
 
