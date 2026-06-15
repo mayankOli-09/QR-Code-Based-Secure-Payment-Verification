@@ -4,49 +4,60 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>QR Secure Payment Verification</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-  <div class="container">
-    <header class="header">
+  <header class="topbar">
+    <div class="brand">
       <h1>QR Secure Payment Verification</h1>
-      <p>Scan a QR code to check UPI details, URL safety, and fraud risk.</p>
-    </header>
+      <p>Detect fake payment screenshots and transaction fraud before payment.</p>
+    </div>
+    <nav class="nav">
+      <a href="{{ url_for('scan_page') }}">Scan</a>
+      <a href="{{ url_for('report_page') }}">Report</a>
+      <a href="{{ url_for('settings_page') }}">Settings</a>
+    </nav>
+  </header>
 
-    <main class="grid">
-      <section class="card">
-        <h2>Scanner</h2>
-        <div id="qr-reader"></div>
-        <div class="controls">
-          <input type="file" id="image-upload" accept="image/*" />
-          <button id="scan-btn">Start Scan</button>
-          <button id="stop-btn">Stop Scan</button>
-        </div>
-      </section>
+  <main class="container">
+    <section class="hero card">
+      <h2>Design a secure QR payment verification mechanism</h2>
+      <p>
+        Scan a payment QR, verify whether it is actually a payment QR, and check it
+        using local rules or external APIs based on your selected mode.
+      </p>
 
-      <section class="card" id="results-card">
-        <h2>Verification Result</h2>
-        <div class="score-box">
-          <div class="score" id="score">0</div>
-          <div class="score-label">Trust Score</div>
-        </div>
-        <div class="badge" id="badge">UNKNOWN</div>
-        <div class="result-item"><strong>Decoded Data:</strong> <span id="decoded-data">-</span></div>
-        <div class="result-item"><strong>Payee Name:</strong> <span id="payee-name">-</span></div>
-        <div class="result-item"><strong>UPI ID:</strong> <span id="upi-id">-</span></div>
-        <div class="result-item"><strong>URL Safety:</strong> <span id="url-safety">-</span></div>
-        <div class="checks">
-          <h3>Security Checks</h3>
-          <ul id="checks-list"></ul>
-        </div>
-      </section>
-    </main>
-  </div>
+      <div class="mode-banner">
+        <span>Verification Mode:</span>
+        <strong id="current-mode">Local Rules</strong>
+      </div>
+    </section>
 
-  <script src="upi-parser.js"></script>
-  <script src="url-safety.js"></script>
-  <script src="fraud-detection.js"></script>
-  <script src="app.js"></script>
+    <section class="card grid-two">
+      <div class="panel">
+        <h3>What this system checks</h3>
+        <ul class="feature-list">
+          <li>UPI ID format</li>
+          <li>Payee name</li>
+          <li>Amount</li>
+          <li>Bank / merchant info</li>
+          <li>QR URL safety</li>
+          <li>Tampering detection</li>
+          <li>Suspicious field detection</li>
+        </ul>
+      </div>
+
+      <div class="panel">
+        <h3>Quick actions</h3>
+        <div class="action-list">
+          <a class="btn" href="{{ url_for('scan_page') }}">Start Scan</a>
+          <a class="btn btn-secondary" href="{{ url_for('report_page') }}">View Reports</a>
+          <a class="btn btn-secondary" href="{{ url_for('settings_page') }}">Open Settings</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>
