@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Settings | QR Secure Payment Verification{% endblock %}
+{% block content %}
+<main class="container">
+  <section class="card">
+    <h2>Settings</h2>
+
+    <div class="settings-grid">
+      <label>
+        Verification Mode
+        <select id="verification-mode">
+          <option value="local" {% if settings.verification_mode == 'local' %}selected{% endif %}>Local Rules</option>
+          <option value="external" {% if settings.verification_mode == 'external' %}selected{% endif %}>External APIs</option>
+        </select>
+      </label>
+
+      <label>
+        Theme
+        <select id="theme">
+          <option value="professional" {% if settings.theme == 'professional' %}selected{% endif %}>Professional</option>
+          <option value="clean" {% if settings.theme == 'clean' %}selected{% endif %}>Clean</option>
+          <option value="student" {% if settings.theme == 'student' %}selected{% endif %}>Student</option>
+        </select>
+      </label>
+
+      <label>
+        Language
+        <select id="language">
+          <option value="en" {% if settings.language == 'en' %}selected{% endif %}>English</option>
+          <option value="hi" {% if settings.language == 'hi' %}selected{% endif %}>Hindi</option>
+        </select>
+      </label>
+
+      <label>
+        Risk Threshold
+        <input type="range" id="risk-threshold" min="0" max="100" value="{{ settings.risk_threshold }}">
+      </label>
+
+      <label class="toggle">
+        <input type="checkbox" id="dark-mode" {% if settings.dark_mode %}checked{% endif %}>
+        Dark Mode
+      </label>
+
+      <label class="toggle">
+        <input type="checkbox" id="url-api-enabled" {% if settings.url_api_enabled %}checked{% endif %}>
+        Enable URL API
+      </label>
+
+      <label class="toggle">
+        <input type="checkbox" id="fraud-api-enabled" {% if settings.fraud_api_enabled %}checked{% endif %}>
+        Enable Fraud API
+      </label>
+    </div>
+
+    <div class="report-actions">
+      <button id="save-settings-btn" class="btn">Save Settings</button>
+    </div>
+  </section>
+</main>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+{% endblock %}
