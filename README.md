@@ -1,117 +1,156 @@
-# 🔐 QR Payment Verification — Secure QR-Based Payment Verifier
+# QR Pay Verifier
 
-<div align="center">
-
-**Detect fraudulent QR codes & verify payments before you tap "Pay"**
-
-*UPI Verification • Fraud Detection • URL Safety • Tamper-Proof QR*
-
-[![Made with HTML](https://img.shields.io/badge/Made%20with-HTML5-orange?logo=html5)](https://developer.mozilla.org/en-US/docs/Web/HTML)
-[![Made with CSS](https://img.shields.io/badge/Styled%20with-CSS3-blue?logo=css3)](https://developer.mozilla.org/en-US/docs/Web/CSS)
-[![Made with JS](https://img.shields.io/badge/Logic-JavaScript-yellow?logo=javascript)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![UPI](https://img.shields.io/badge/Supports-UPI%20QR-green?logo=googlepay)](https://www.npci.org.in/what-we-do/upi/product-overview)
-
-</div>
+A browser-based QR code payment verification system with a Python/FastAPI backend and a vanilla JS/HTML/CSS frontend.
 
 ---
 
-## 🎯 What is QR Payment Verification?
+## Project Structure
 
-**QR Payment Verification** is a lightweight, fully client-side web tool built to fight one of the fastest-growing scams in digital payments — **fake or tampered QR codes**.
-
-Scammers swap genuine merchant QR codes with malicious ones, redirect payments to the wrong UPI ID, or send fake "payment successful" screenshots to dupe sellers. This tool lets you **scan, verify, and trust** a QR code *before* you complete a transaction — and helps merchants verify tamper-proof payment proofs *after*.
-
-> ⚠️ **No more "Sorry, I sent it, check again" scams. Verify first, pay second.**
-
----
-
-## ✨ Key Features
-
-| Function | How It Works |
-|---|---|
-| 🔍 **Scan & Validate QR Codes** | Extracts embedded data (UPI intent string or URL) from any QR code and parses it for analysis |
-| 🛡️ **Fraud Detection** | Flags fraudulent, tampered, or known-scam QR patterns before you proceed with payment |
-| ✅ **Recipient Verification** | Cross-checks the UPI payee name (`pn`) against the UPI ID (`pa`) to confirm who you're *really* paying |
-| 🌐 **URL Safety Check** | Scans embedded URLs against suspicious-pattern heuristics to catch phishing redirects |
-| 🔏 **Tamper-Proof Receipts** | Validates digitally signed QR codes attached to payment screenshots, so merchants can confirm a transaction is genuine — not photoshopped |
-
----
-
-## 🏗️ Project Structure
-
-qr-payment-verification
-index.html           # Main UI
-
-style.css            # Styling & layout
-
-app.js               # Core application logic & UI controller
-
-upi-parser.js        # Parses UPI intent strings (pa, pn, am, etc.)
-
-url-safety.js         # Checks embedded URLs for phishing/red flags
-
-fraud-detection.js    # Cross-checks data against fraud heuristics
-
-test-qr-codes/        # Sample QR images for testing
-
-README.md             # Documentation
-
+```
+qr-verifier/
+├── backend/
+│   ├── main.py                  # FastAPI app entry point
+│   ├── requirements.txt
+│   ├── .env.example             # Copy to .env and add API keys
+│   └── services/
+│       ├── qr_decoder.py        # QR image → decoded string
+│       ├── upi_parser.py        # UPI string parser
+│       ├── url_checker.py       # VirusTotal + Google Safe Browsing
+│       └── fraud_detector.py    # Trust score + risk assessment
+└── frontend/
+    ├── index.html
+    ├── style.css
+    └── app.js
+```
 
 ---
 
-## 🛠️ Tech Stack
+## Setup
 
-| Layer | Technology |
-|---|---|
-| **Frontend** | HTML5, CSS3, Vanilla JavaScript |
-| **QR Decoding** | Client-side QR image scanning |
-| **UPI Parsing** | Custom UPI deep-link parser (`upi://pay?...`) |
-| **Security Engine** | URL Safety Checker + Fraud Detection heuristics |
-| **Proof of Authenticity** | Digital signature validation for tamper-proof receipts |
+### 1. Backend
+
+```bash
+cd backend
+
+# Install system dependency for pyzbar (Linux/Mac)
+# Ubuntu/Debian:
+sudo apt-get install libzbar0
+# macOS:
+brew install zbar
+
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Configure API keys
+cp .env.example .env
+# Edit .env and paste your keys:
+#   VIRUSTOTAL_API_KEY=...
+#   GOOGLE_SAFE_BROWSING_API_KEY=...
+```
+
+**Get API keys:**
+- VirusTotal (free): https://www.virustotal.com/gui/join-us
+- Google Safe Browsing: https://console.cloud.google.com → Enable "Safe Browsing API" → Create API Key
+
+> If you leave the keys blank, the system still works using offline heuristic checks.
+
+### 2. Run the backend
+
+```bash
+cd backend
+uvicorn main:app --reload
+```
+
+The API will be live at `http://localhost:8000`  
+Interactive docs: `http://localhost:8000/docs`
+
+### 3. Frontend
+
+Simply open `frontend/index.html` in your browser.
+
+> For a proper dev server (avoids CORS issues on some browsers):
+> ```bash
+> cd frontend
+> npx serve .
+> # or: python -m http.server 3000
+> ```
 
 ---
 
-## 📸 How It Works
+## How It Works
 
- 📷  User uploads or scans a QR code
- 
-        │
-        ▼
- 🧩  QR data is decoded → UPI intent string or raw URL
- 
-        │
-        ▼
- 🌐  url-safety.js checks for phishing / malicious link patterns
-        
-        │
-        ▼
- 🕵️  fraud-detection.js checks for tampering & known scam signatures
-        
-        │
-        ▼
- ✅  upi-parser.js verifies payee name (pn) matches UPI ID (pa)
-        
-        │
-        ▼
- 🚦  User sees a clear verdict:  SAFE ✅ | SUSPICIOUS ⚠️ | FRAUD ❌
+| Step | What Happens |
+|------|-------------|
+| 1 | User uploads a QR code image |
+| 2 | Backend decodes the QR using pyzbar + OpenCV (tries multiple strategies for robustness) |
+| 3 | System detects type: UPI, URL, or plain text |
+| 4 | UPI strings are parsed for payee name, amount, VPA validity |
+| 5 | URLs are checked via VirusTotal + Google Safe Browsing (with offline fallback) |
+| 6 | A trust score (0–100) is computed and a SAFE / WARNING / DANGEROUS rating is shown |
 
 ---
 
-## 🔮 Roadmap
+## Trust Score Breakdown
 
-- [ ] Live camera-based QR scanning
-- [ ] Database of known scam UPI IDs (community-reported)
-- [ ] Browser extension version
-- [ ] Multi-language support
+| Factor | Impact |
+|--------|--------|
+| Valid UPI format | +20 |
+| Payee name present | +15 |
+| Known bank/wallet VPA suffix | +10 |
+| Normal amount | +5 |
+| URL passes safety checks | +25 |
+| Invalid UPI format | -30 |
+| Missing payee name | -20 |
+| High amount (>₹10,000) | -15 |
+| Malicious URL detected | -40 |
+| Suspicious URL pattern | -8 per flag |
+
+**Ratings:** 80–100 = SAFE · 50–79 = WARNING · 0–49 = DANGEROUS
 
 ---
-\`\`\`
 
+## API Reference
 
-<div align="center">
+### `POST /verify`
 
-⭐ **If this project helped you spot a scam, star the repo and share it!** ⭐
+Upload a QR code image and receive a full verification report.
 
-*Stay safe. Scan smart. Pay secure.*
+**Request:** `multipart/form-data` with a field `file` (image)
 
-</div>
+**Response:**
+```json
+{
+  "raw_data": "upi://pay?pa=merchant@upi&pn=MerchantName&am=100&cu=INR",
+  "type": "upi",
+  "upi_info": {
+    "payment_address": "merchant@upi",
+    "payee_name": "MerchantName",
+    "amount": "100",
+    "currency": "INR",
+    "is_valid_format": true,
+    "vpa_suffix_known": false,
+    "warnings": []
+  },
+  "url_safety": null,
+  "trust_score": 95,
+  "rating": "SAFE",
+  "checks": [
+    { "label": "Valid UPI format", "passed": true },
+    { "label": "Payee name present: MerchantName", "passed": true }
+  ],
+  "recommendation": "Looks good. You may proceed with this payment."
+}
+```
+
+---
+
+## Testing
+
+Generate test QR codes using any UPI app (GPay, PhonePe, Paytm) or an online QR generator.
+
+Test cases to cover:
+- Valid GPay merchant QR → should be SAFE
+- UPI QR without payee name → should be WARNING
+- URL QR with a known phishing link → should be DANGEROUS
+- Plain text QR → neutral result
+- Blurry / rotated image → decoder tries multiple strategies
