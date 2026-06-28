@@ -3,61 +3,101 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QR Secure Payment Verification</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <title>QR Pay Verifier</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <h1>QR Secure Payment Verification</h1>
-      <p>Detect fake payment screenshots and transaction fraud before payment.</p>
+
+  <header>
+    <div class="logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="1" width="11" height="11" rx="2" stroke="currentColor" stroke-width="2"/>
+        <rect x="4" y="4" width="5" height="5" fill="currentColor"/>
+        <rect x="16" y="1" width="11" height="11" rx="2" stroke="currentColor" stroke-width="2"/>
+        <rect x="19" y="4" width="5" height="5" fill="currentColor"/>
+        <rect x="1" y="16" width="11" height="11" rx="2" stroke="currentColor" stroke-width="2"/>
+        <rect x="4" y="19" width="5" height="5" fill="currentColor"/>
+        <rect x="16" y="16" width="5" height="5" fill="currentColor"/>
+        <rect x="23" y="16" width="4" height="4" fill="currentColor"/>
+        <rect x="16" y="23" width="4" height="4" fill="currentColor"/>
+        <rect x="22" y="22" width="5" height="5" fill="currentColor"/>
+      </svg>
+      <span>QR Pay Verifier</span>
     </div>
-    <nav class="nav">
-      <a href="{{ url_for('scan_page') }}">Scan</a>
-      <a href="{{ url_for('report_page') }}">Report</a>
-      <a href="{{ url_for('settings_page') }}">Settings</a>
-    </nav>
+    <p class="tagline">Verify before you pay. Every time.</p>
   </header>
 
-  <main class="container">
-    <section class="hero card">
-      <h2>Design a secure QR payment verification mechanism</h2>
-      <p>
-        Scan a payment QR, verify whether it is actually a payment QR, and check it
-        using local rules or external APIs based on your selected mode.
-      </p>
-
-      <div class="mode-banner">
-        <span>Verification Mode:</span>
-        <strong id="current-mode">Local Rules</strong>
+  <main>
+    <!-- Upload Zone -->
+    <section class="upload-section" id="uploadSection">
+      <div class="drop-zone" id="dropZone">
+        <div class="drop-icon">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <path d="M24 32V16M24 16L18 22M24 16L30 22" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 36C8 36 8 40 12 40H36C40 40 40 36 40 36" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <p class="drop-title">Drop your QR code image here</p>
+        <p class="drop-sub">or</p>
+        <label class="btn-upload" for="fileInput">Choose File</label>
+        <input type="file" id="fileInput" accept="image/*" hidden />
+        <p class="drop-formats">PNG, JPG, WEBP — max 10 MB</p>
       </div>
+
+      <div class="preview-wrap" id="previewWrap" style="display:none;">
+        <img id="previewImg" alt="QR code preview" />
+        <button class="btn-clear" id="clearBtn">✕ Clear</button>
+      </div>
+
+      <button class="btn-verify" id="verifyBtn" disabled>Verify QR Code</button>
     </section>
 
-    <section class="card grid-two">
-      <div class="panel">
-        <h3>What this system checks</h3>
-        <ul class="feature-list">
-          <li>UPI ID format</li>
-          <li>Payee name</li>
-          <li>Amount</li>
-          <li>Bank / merchant info</li>
-          <li>QR URL safety</li>
-          <li>Tampering detection</li>
-          <li>Suspicious field detection</li>
-        </ul>
-      </div>
+    <!-- Loader -->
+    <div class="loader" id="loader" style="display:none;">
+      <div class="spinner"></div>
+      <p>Analysing QR code…</p>
+    </div>
 
-      <div class="panel">
-        <h3>Quick actions</h3>
-        <div class="action-list">
-          <a class="btn" href="{{ url_for('scan_page') }}">Start Scan</a>
-          <a class="btn btn-secondary" href="{{ url_for('report_page') }}">View Reports</a>
-          <a class="btn btn-secondary" href="{{ url_for('settings_page') }}">Open Settings</a>
+    <!-- Results -->
+    <section class="result-section" id="resultSection" style="display:none;">
+      <div class="score-ring-wrap">
+        <svg class="score-ring" viewBox="0 0 120 120" width="120" height="120">
+          <circle class="ring-bg" cx="60" cy="60" r="52" />
+          <circle class="ring-fill" id="ringFill" cx="60" cy="60" r="52"
+            stroke-dasharray="326.7" stroke-dashoffset="326.7" />
+        </svg>
+        <div class="score-inner">
+          <span class="score-num" id="scoreNum">0</span>
+          <span class="score-label">/ 100</span>
         </div>
       </div>
+
+      <div class="rating-badge" id="ratingBadge">—</div>
+      <p class="recommendation" id="recommendation"></p>
+
+      <!-- Details grid -->
+      <div class="details-grid" id="detailsGrid"></div>
+
+      <!-- Checks list -->
+      <div class="checks-wrap">
+        <h3>Security Checks</h3>
+        <ul class="checks-list" id="checksList"></ul>
+      </div>
+
+      <!-- Raw data -->
+      <details class="raw-wrap">
+        <summary>Raw QR Data</summary>
+        <pre id="rawData"></pre>
+      </details>
+
+      <button class="btn-again" id="scanAgainBtn">Scan Another</button>
     </section>
   </main>
 
-  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  <footer>
+    <p>Results are indicative. Always confirm payee details independently.</p>
+  </footer>
+
+  <script src="app.js"></script>
 </body>
 </html>
