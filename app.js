@@ -1,5 +1,101 @@
 /* ── Config ──────────────────────────────────────────────── */
 const API_BASE = "http://127.0.0.1:8000";
+const HISTORY_KEY = "qrpay_history";
+const MAX_HISTORY = 50;
+
+/* ── History helpers ─────────────────────────────────────── */
+function loadHistory() {
+  try {
+    return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function saveToHistory(entry) {
+  const history = loadHistory();
+  history.unshift(entry);
+  if (history.length > MAX_HISTORY) history.splice(MAX_HISTORY);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+}
+
+function formatTime(ts) {
+  const d = new Date(ts);
+  const now = new Date();
+  const diff = Math.floor((now - d) / 1000);
+  if (diff < 60)  return "Just now";
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  return d.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+}
+
+function verdictIcon(verdict) {
+  const map = {
+    "SAFE": "✅", "WARNING": "⚠️", "DANGEROUS": "❌",
+    "LIKELY REAL": "✅", "SUSPICIOUS": "⚠️", "LIKELY FAKE": "❌",
+    "UNKNOWN": "❓", "ERROR": "⚠️",
+  };
+  return map[verdict] || "❓";
+}
+
+function verdictClass(verdict) {
+  return verdict.replace(/\s+/g, "_").toUpperCase();
+}
+
+function renderHistory() {
+  const history = loadHistory();
+  const list = document.getElementById("historyList");
+  const empty = document.getElementById("historyEmpty");
+
+  list.innerHTML = "";
+
+  if (history.length === 0) {
+    empty.style.display = "block";
+    list.style.display = "none";
+    return;
+  }
+
+  empty.style.display = "none";
+  list.style.display = "flex";
+
+  history.forEach(entry => {
+    const vc = verdictClass(entry.verdict);
+    const card = document.createElement("div");
+    card.className = `history-card ${vc}`;
+
+    let detail = "";
+    if (entry.type === "QR") {
+      if (entry.upi_id)     detail = `UPI: ${entry.upi_id}`;
+      else if (entry.url)   detail = `URL: ${entry.url}`;
+      else if (entry.raw)   detail = `Data: ${entry.raw}`;
+      else                  detail = "Plain text QR";
+    } else {
+      if (entry.app)        detail += `${entry.app}`;
+      if (entry.amount)     detail += ` · ₹${entry.amount}`;
+      if (entry.txn_id)     detail += ` · ID: ${entry.txn_id}`;
+      if (!detail)          detail = "Payment screenshot";
+    }
+
+    const scoreHtml = entry.score !== undefined
+      ? `<div class="history-score">Trust Score: ${entry.score}/100</div>`
+      : `<div class="history-score">Confidence: ${entry.confidence}/100</div>`;
+
+    card.innerHTML = `
+      <div class="history-icon">${verdictIcon(entry.verdict)}</div>
+      <div class="history-content">
+        <div class="history-top">
+          <span class="history-verdict ${vc}">${entry.verdict}</span>
+          <span class="history-type">${entry.type}</span>
+          <span class="history-timestamp">${formatTime(entry.timestamp)}</span>
+        </div>
+        <div class="history-detail">${detail}</div>
+        ${scoreHtml}
+      </div>
+    `;
+
+    list.appendChild(card);
+  });
+}
 
 /* ── Tab switching ───────────────────────────────────────── */
 document.querySelectorAll(".tab-btn").forEach(btn => {
@@ -7,7 +103,9 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
     document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
     btn.classList.add("active");
-    document.getElementById(`tab-${btn.dataset.tab}`).classList.add("active");
+    const tabId = `tab-${btn.dataset.tab}`;
+    document.getElementById(tabId).classList.add("active");
+    if (btn.dataset.tab === "history") renderHistory();
   });
 });
 
@@ -36,7 +134,10 @@ fileInput.addEventListener("change", () => {
   if (fileInput.files[0]) setFile(fileInput.files[0]);
 });
 
-dropZone.addEventListener("click", () => fileInput.click());
+dropZone.addEventListener("click", (e) => {
+  if (e.target.classList.contains("btn-upload") || e.target.closest("label")) return;
+  fileInput.click();
+});
 dropZone.addEventListener("dragover", (e) => { e.preventDefault(); dropZone.classList.add("drag-over"); });
 dropZone.addEventListener("dragleave", () => dropZone.classList.remove("drag-over"));
 dropZone.addEventListener("drop", (e) => {
@@ -84,6 +185,20 @@ verifyBtn.addEventListener("click", async () => {
       throw new Error(err.detail || `Server error: ${resp.status}`);
     }
     const data = await resp.json();
+
+    // Save to history
+    saveToHistory({
+      type: "QR",
+      verdict: data.rating,
+      score: data.trust_score,
+      upi_id: data.upi_info?.payment_address || null,
+      payee: data.upi_info?.payee_name || null,
+      amount: data.upi_info?.amount || null,
+      url: data.type === "url" ? data.raw_data : null,
+      raw: data.raw_data,
+      timestamp: Date.now(),
+    });
+
     renderResult(data);
   } catch (err) {
     loader.style.display = "none";
@@ -99,9 +214,9 @@ function renderResult(data) {
   const offset = circumference - (score / 100) * circumference;
 
   let ringColor = "var(--accent)";
-  if (data.rating === "SAFE")      ringColor = "var(--safe)";
-  else if (data.rating === "WARNING")   ringColor = "var(--warn)";
-  else if (data.rating === "DANGEROUS") ringColor = "var(--danger)";
+  if (data.rating === "SAFE")          ringColor = "var(--safe)";
+  else if (data.rating === "WARNING")  ringColor = "var(--warn)";
+  else if (data.rating === "DANGEROUS")ringColor = "var(--danger)";
 
   ringFill.style.stroke = ringColor;
   animateScore(score);
@@ -140,10 +255,10 @@ function buildDetails(data) {
   details.push({ label: "QR Type", value: data.type?.toUpperCase() || "UNKNOWN" });
   if (data.upi_info) {
     const u = data.upi_info;
-    details.push({ label: "Payee Name",  value: u.payee_name       || "Not specified" });
-    details.push({ label: "UPI ID",      value: u.payment_address  || "—" });
+    details.push({ label: "Payee Name",  value: u.payee_name      || "Not specified" });
+    details.push({ label: "UPI ID",      value: u.payment_address || "—" });
     details.push({ label: "Amount",      value: u.amount ? `₹${parseFloat(u.amount).toLocaleString("en-IN")}` : "Not specified" });
-    details.push({ label: "Currency",    value: u.currency         || "INR" });
+    details.push({ label: "Currency",    value: u.currency        || "INR" });
     if (u.transaction_note) details.push({ label: "Note", value: u.transaction_note });
   }
   if (data.url_safety) {
@@ -197,7 +312,10 @@ ssFileInput.addEventListener("change", () => {
   if (ssFileInput.files[0]) ssSetFile(ssFileInput.files[0]);
 });
 
-ssDropZone.addEventListener("click", () => ssFileInput.click());
+ssDropZone.addEventListener("click", (e) => {
+  if (e.target.classList.contains("btn-upload") || e.target.closest("label")) return;
+  ssFileInput.click();
+});
 ssDropZone.addEventListener("dragover", (e) => { e.preventDefault(); ssDropZone.classList.add("drag-over"); });
 ssDropZone.addEventListener("dragleave", () => ssDropZone.classList.remove("drag-over"));
 ssDropZone.addEventListener("drop", (e) => {
@@ -245,6 +363,18 @@ ssVerifyBtn.addEventListener("click", async () => {
       throw new Error(err.detail || `Server error: ${resp.status}`);
     }
     const data = await resp.json();
+
+    // Save to history
+    saveToHistory({
+      type: "Screenshot",
+      verdict: data.verdict,
+      confidence: data.confidence,
+      app: data.app_detected || null,
+      amount: data.amount || null,
+      txn_id: data.transaction_id || null,
+      timestamp: Date.now(),
+    });
+
     renderScreenshotResult(data);
   } catch (err) {
     ssLoader.style.display = "none";
@@ -256,28 +386,26 @@ ssVerifyBtn.addEventListener("click", async () => {
 function renderScreenshotResult(data) {
   ssLoader.style.display = "none";
 
-  // Verdict banner
   const verdictMap = {
-    "LIKELY REAL":  { icon: "✅", cls: "REAL",       color: "var(--safe)" },
-    "SUSPICIOUS":   { icon: "⚠️", cls: "SUSPICIOUS",  color: "var(--warn)" },
+    "LIKELY REAL":  { icon: "✅", cls: "REAL",       color: "var(--safe)"   },
+    "SUSPICIOUS":   { icon: "⚠️", cls: "SUSPICIOUS",  color: "var(--warn)"   },
     "LIKELY FAKE":  { icon: "❌", cls: "FAKE",        color: "var(--danger)" },
-    "UNKNOWN":      { icon: "❓", cls: "",             color: "var(--muted)" },
-    "ERROR":        { icon: "⚠️", cls: "",             color: "var(--muted)" },
+    "UNKNOWN":      { icon: "❓", cls: "",             color: "var(--muted)"  },
+    "ERROR":        { icon: "⚠️", cls: "",             color: "var(--muted)"  },
   };
 
   const v = verdictMap[data.verdict] || verdictMap["UNKNOWN"];
-  ssVerdictIcon.textContent   = v.icon;
-  ssVerdict.textContent       = data.verdict;
-  ssVerdict.style.color       = v.color;
-  ssRecommendation.textContent= data.recommendation;
-  ssBanner.className          = `verdict-banner ${v.cls}`;
+  ssVerdictIcon.textContent    = v.icon;
+  ssVerdict.textContent        = data.verdict;
+  ssVerdict.style.color        = v.color;
+  ssRecommendation.textContent = data.recommendation;
+  ssBanner.className           = `verdict-banner ${v.cls}`;
 
-  // Details
   ssDetailsGrid.innerHTML = "";
   const details = [];
-  if (data.transaction_id) details.push({ label: "Transaction ID", value: data.transaction_id });
-  if (data.amount)         details.push({ label: "Amount Detected", value: `₹${data.amount}` });
-  if (data.app_detected)   details.push({ label: "App Detected", value: data.app_detected });
+  if (data.transaction_id) details.push({ label: "Transaction ID",  value: data.transaction_id });
+  if (data.amount)         details.push({ label: "Amount Detected", value: `₹${data.amount}`  });
+  if (data.app_detected)   details.push({ label: "App Detected",    value: data.app_detected   });
   details.push({ label: "Confidence", value: `${data.confidence} / 100` });
 
   details.forEach(({ label, value }) => {
@@ -288,7 +416,6 @@ function renderScreenshotResult(data) {
       </div>`;
   });
 
-  // Checks
   ssChecksList.innerHTML = "";
   (data.checks || []).forEach((check) => {
     const cls  = check.passed === true ? "pass" : check.passed === false ? "fail" : "neutral";
@@ -300,7 +427,6 @@ function renderScreenshotResult(data) {
       </li>`;
   });
 
-  // Raw OCR text
   ssRawText.textContent = data.extracted_text || "No text extracted.";
   ssResultSection.style.display = "flex";
 }
@@ -309,4 +435,22 @@ ssScanAgainBtn.addEventListener("click", () => {
   ssResultSection.style.display = "none";
   ssUploadSection.style.display = "flex";
   ssResetUpload();
+});
+
+/* ── History clear button ────────────────────────────────── */
+document.getElementById("clearHistoryBtn").addEventListener("click", () => {
+  if (confirm("Clear all scan history?")) {
+    localStorage.removeItem(HISTORY_KEY);
+    renderHistory();
+  }
+});
+
+/* ── FAQ Accordion ───────────────────────────────────────── */
+document.querySelectorAll(".faq-question").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const item = btn.closest(".faq-item");
+    const isOpen = item.classList.contains("open");
+    document.querySelectorAll(".faq-item").forEach(i => i.classList.remove("open"));
+    if (!isOpen) item.classList.add("open");
+  });
 });
