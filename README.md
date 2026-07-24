@@ -1,387 +1,265 @@
-# 🔐 QR Pay Verifier — Secure QR Payment Verification System
-
+🔐 QR Pay Verifier — Secure QR Payment Verification System
 <div align="center">
 
-**Scan. Analyze. Trust. — Before you pay.**
+Scan. Analyze. Trust. — Before you pay.
 
-*QR Verification • Payment Screenshot Analysis • OCR • Fraud Detection • URL Safety • Real-Time Verification*
+QR Verification • Screenshot Analysis • OCR • Fraud Detection • URL Safety • Scan History • Real-Time Verification
 
-[![Python](https://img.shields.io/badge/Python-3.12+-blue?logo=python&logoColor=white)](https://python.org)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-teal?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
-[![OpenCV](https://img.shields.io/badge/OpenCV-4.9+-red?logo=opencv&logoColor=white)](https://opencv.org)
-[![EasyOCR](https://img.shields.io/badge/EasyOCR-Latest-green)](https://github.com/JaidedAI/EasyOCR)
-[![PyTorch](https://img.shields.io/badge/PyTorch-Deep%20Learning-orange?logo=pytorch)](https://pytorch.org)
-[![JavaScript](https://img.shields.io/badge/Frontend-Vanilla%20JS-yellow?logo=javascript)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![License](https://img.shields.io/badge/License-MIT-lightgrey)](LICENSE)
+Show Image Show Image Show Image Show Image Show Image Show Image Show Image
 
 </div>
+🎯 What is QR Pay Verifier?
 
----
+QR Pay Verifier is a browser-based security tool that analyzes QR codes and payment screenshots before you complete a payment. Upload a QR code or payment receipt — the system decodes, analyzes, and gives you a clear verdict before you tap "Pay" or hand over goods.
 
-# 🎯 What is QR Pay Verifier?
+⚠️ Don't scan first and regret later. Verify before you pay.
 
-**QR Pay Verifier** is a browser-based security tool that analyzes **QR codes and payment screenshots** before you complete a payment.
-
-Upload either:
-
-- 📷 A QR Code
-- 🧾 A Payment Screenshot
-
-The system automatically determines which type has been uploaded and performs the appropriate verification.
-
-For QR codes it:
-
-- Decodes the QR
-- Identifies whether it is UPI / URL / Text
-- Performs fraud analysis
-- Generates a trust score
-
-For payment screenshots it:
-
-- Extracts text using OCR
-- Detects payment app
-- Detects merchant
-- Detects UPI ID
-- Detects transaction ID
-- Detects payment amount
-- Detects date & time
-- Checks screenshot authenticity
-- Produces a verification verdict
-
-> ⚠️ **Don't scan first and regret later. Verify before you pay.**
-
----
-
-# ✨ Key Features
-
-| Feature | Description |
-|---|---|
-| 🔍 **QR Decoding** | Decodes QR codes using OpenCV without requiring ZBar or pyzbar |
-| 🧾 **Payment Screenshot Verification** | Verify Google Pay, PhonePe, Paytm and other payment screenshots |
-| 👁️ **OCR Extraction** | Uses EasyOCR with multiple preprocessing techniques |
-| 🧠 **Automatic Detection** | Detects whether uploaded image is a QR code or payment screenshot |
-| 🛡️ **Fraud Detection** | Performs multiple security checks |
-| 📊 **Trust Score** | Generates confidence score and rating |
-| 🌐 **URL Safety Check** | Detects suspicious or phishing URLs |
-| ✅ **UPI Verification** | Validates UPI details from QR codes |
-| 💰 **Amount Detection** | Extracts payment amount from screenshots |
-| 🏪 **Merchant Detection** | Detects recipient/merchant name |
-| 🆔 **Transaction Verification** | Detects UPI and Google transaction IDs |
-| 📅 **Date & Time Detection** | Extracts payment date and time |
-| 🖼️ **Image Quality Check** | Detects poor-quality or suspicious screenshots |
-
----
-
-# 🏗️ Project Structure
-
-```
+For QR Codes it:
+Decodes the QR using multi-pass OpenCV processing
+Identifies whether it is UPI / URL / Plain Text
+Validates UPI ID, payee name, and known VPA suffixes
+Checks embedded URLs against threat databases
+Generates a Trust Score with SAFE / WARNING / DANGEROUS rating
+For Payment Screenshots it:
+Extracts all text using EasyOCR with multiple preprocessing passes
+Detects payment app (Google Pay, PhonePe, Paytm, BHIM, etc.)
+Extracts merchant name, UPI ID, transaction ID, amount, date & time
+Checks image authenticity and quality
+Produces a LIKELY REAL / SUSPICIOUS / LIKELY FAKE verdict
+✨ Key Features
+Feature	Description
+🔍 QR Decoding	Decodes QR codes using OpenCV — no ZBar or pyzbar required
+🧾 Screenshot Verification	Verifies Google Pay, PhonePe, Paytm, BHIM, and more
+👁️ OCR Extraction	EasyOCR with grayscale, threshold, adaptive, and sharpen passes
+🛡️ Fraud Detection	Multiple weighted security checks per scan
+📊 Trust Score	0–100 confidence score with SAFE / WARNING / DANGEROUS rating
+🌐 URL Safety Check	Offline heuristics + VirusTotal + Google Safe Browsing
+✅ UPI Verification	Validates UPI format, payee name, VPA suffix, and amount
+💰 Amount Detection	Extracts and validates payment amount from screenshots
+🏪 Merchant Detection	Detects recipient / merchant name from receipts
+🆔 Transaction Verification	Detects UPI reference numbers and app transaction IDs
+📅 Date & Time Detection	Extracts payment date and time from screenshots
+🕐 Scan History	Saves last 50 scans locally with verdict, score, and details
+❓ FAQ	Built-in guide covering QR fraud, quishing, and safe payment practices
+ℹ️ About	Explains how the tool works with real-world fraud examples
+🏗️ Project Structure
 QR Code-Based Secure Payment Verification/
 │
-├── v2/
-│   ├── main.py                # FastAPI application
-│   ├── qr_decoder.py          # QR Decoder
-│   ├── upi_parser.py          # UPI Parser
-│   ├── url_checker.py         # URL Safety Checker
-│   ├── fraud_detector.py      # QR Fraud Detection
-│   ├── ss_checker.py          # Screenshot Verification using EasyOCR
-│   ├── app.js                 # Frontend Logic
-│   ├── style.css              # Styling
-│   ├── index.html             # UI
-│   ├── req.txt                # Dependencies
-│   └── venv/
+├── v2/                          ← Active project
+│   ├── main.py                  # FastAPI application & API endpoints
+│   ├── qr_decoder.py            # OpenCV-based QR decoding (multi-pass)
+│   ├── upi_parser.py            # UPI intent string parser
+│   ├── url_checker.py           # URL safety checker
+│   ├── fraud_detector.py        # QR fraud detection & trust scoring
+│   ├── ss_checker.py            # Screenshot verification using EasyOCR
+│   ├── app.js                   # Frontend logic (all tabs)
+│   ├── style.css                # Styling
+│   ├── index.html               # UI (QR, Screenshot, History, FAQ, About)
+│   ├── reqt.txt                 # Python dependencies
+│   └── venv/                    # Virtual environment
 │
-└── Older Flask version (Deprecated)
-```
-
----
-
-# ⚙️ Installation
-
-## Prerequisites
-
-- Python 3.12+
-- VS Code
-- Live Server Extension
-
----
-
-## Step 1
-
-```cmd
+└── (Older Flask version — deprecated, not used)
+⚙️ Installation
+Prerequisites
+Python 3.12+
+VS Code with Live Server extension
+Step 1 — Navigate to project folder
+cmd
 D:
 cd "D:\College\Projects\QR Code-Based Secure Payment Verification\v2"
-```
-
----
-
-## Step 2
-
-Activate the virtual environment.
-
-```cmd
+Step 2 — Activate virtual environment
+cmd
 ..\venv\Scripts\activate
-```
 
-You should now see
+You should see (venv) appear in your prompt.
 
-```
-(venv)
-```
+Step 3 — Install dependencies
+cmd
+pip install -r reqt.txt
 
----
+Or manually:
 
-## Step 3
-
-Install dependencies.
-
-```cmd
-pip install -r req.txt
-```
-
-or
-
-```cmd
+cmd
 pip install fastapi uvicorn opencv-python pillow numpy python-multipart python-dotenv easyocr torch torchvision
-```
-
----
-
-## Running the Project
-
-Start the backend.
-
-```cmd
+🚀 Running the Project
+Start the backend
+cmd
 python main.py
-```
 
-You should see
+You should see:
 
-```
-INFO: Uvicorn running on http://0.0.0.0:8000
-```
+INFO:     Uvicorn running on http://0.0.0.0:8000
 
-Keep this terminal running.
+Keep this terminal open — the backend must stay running.
 
-Open **index.html** using Live Server.
+Open the frontend
 
-Example:
+Open index.html using Live Server in VS Code:
 
-```
 http://127.0.0.1:5500/v2/index.html
-```
+📸 How It Works
+                      USER
+                        │
+            ┌───────────┴───────────┐
+            │                       │
+            ▼                       ▼
+     Upload QR Code        Upload Payment Screenshot
+            │                       │
+            ▼                       ▼
+   OpenCV QR Decoder      EasyOCR + Image Processing
+            │                       │
+            ▼                       ▼
+   QR Classification       OCR Text Extraction
+            │                       │
+            ▼                       ▼
+  UPI Parse / URL Check   Merchant, Amount & UPI Detection
+            │                       │
+            ▼                       ▼
+   Fraud Detection        Screenshot Authenticity Checks
+            └───────────┬───────────┘
+                        ▼
+               Security Analysis
+                        │
+                        ▼
+            Trust Score / Verdict Generated
+                        │
+                        ▼
+         SAFE ✅     WARNING ⚠️     DANGEROUS ❌
+                        │
+                        ▼
+              Saved to Scan History 🕐
+📊 Trust Score System
+QR Verification
+Factor	Effect on Score
+✅ Valid UPI format	➕ Positive
+✅ Payee name present	➕ Positive
+✅ Known VPA suffix (bank/wallet)	➕ Positive
+✅ Safe URL	➕ Positive
+❌ Suspicious or phishing URL	➖ Negative
+❌ Invalid UPI format	➖ Negative
+❌ Missing payee name	➖ Negative
+❌ Unusually large amount (>₹10,000)	➖ Negative
+Screenshot Verification
+Factor	Effect on Score
+✅ Payment success keywords found	➕ Positive
+✅ Valid transaction ID detected	➕ Positive
+✅ Known payment app detected	➕ Positive
+✅ Merchant name detected	➕ Positive
+✅ UPI ID detected	➕ Positive
+✅ Amount detected	➕ Positive
+✅ Date & time detected	➕ Positive
+✅ Good image quality	➕ Positive
+❌ No transaction ID found	➖ Negative
+❌ Low image sharpness	➖ Negative
+❌ Failure / pending keywords	➖ Negative
+Ratings
+🟢  80 – 100   →   SAFE / LIKELY REAL
+🟡  50 – 79    →   WARNING / SUSPICIOUS
+🔴   0 – 49    →   DANGEROUS / LIKELY FAKE
+🔌 API Reference
 
----
-# 📸 How It Works
+Base URL: http://127.0.0.1:8000
 
-```
-                    USER
-                      │
-          ┌───────────┴───────────┐
-          │                       │
-          ▼                       ▼
-   Upload QR Code        Upload Payment Screenshot
-          │                       │
-          ▼                       ▼
- OpenCV QR Decoder      EasyOCR + Image Processing
-          │                       │
-          ▼                       ▼
- QR Classification      OCR Text Extraction
-          │                       │
-          ▼                       ▼
-UPI Parsing / URL Check Merchant, Amount & UPI Detection
-          │                       │
-          ▼                       ▼
- Fraud Detection      Screenshot Authenticity Checks
-          └───────────┬───────────┘
-                      ▼
-             Security Analysis
-                      │
-                      ▼
-          Trust Score / Verdict Generated
-                      │
-                      ▼
-      SAFE ✅   WARNING ⚠️   DANGEROUS ❌
-```
+POST /verify
 
----
+Accepts a QR code image and returns a full verification report.
 
-# 📊 Trust Score System
+Request: multipart/form-data — field: file
 
-## QR Verification
+Response:
 
-| Factor | Effect on Score |
-|---|---|
-| ✅ Valid UPI format | ➕ Positive |
-| ✅ Payee name present | ➕ Positive |
-| ✅ Valid UPI ID | ➕ Positive |
-| ✅ Safe URL | ➕ Positive |
-| ❌ Suspicious URL | ➖ Negative |
-| ❌ Invalid UPI format | ➖ Negative |
-| ❌ Missing payee name | ➖ Negative |
-| ❌ Unusually large amount | ➖ Negative |
-
----
-
-## Screenshot Verification
-
-| Factor | Effect |
-|---|---|
-| ✅ Payment success keywords | ➕ Positive |
-| ✅ Valid transaction ID | ➕ Positive |
-| ✅ Payment app detected | ➕ Positive |
-| ✅ Merchant detected | ➕ Positive |
-| ✅ UPI ID detected | ➕ Positive |
-| ✅ Amount detected | ➕ Positive |
-| ✅ Date & Time detected | ➕ Positive |
-| ✅ Good image quality | ➕ Positive |
-| ❌ Missing transaction ID | ➖ Negative |
-| ❌ Low image quality | ➖ Negative |
-| ❌ Failure / Pending keywords | ➖ Negative |
-
----
-
-## Ratings
-
-```
-🟢 80 – 100 → SAFE
-🟡 50 – 79  → WARNING
-🔴 0 – 49   → DANGEROUS
-```
-
----
-
-# 🔌 API Reference
-
-Base URL
-
-```
-http://127.0.0.1:8000
-```
-
----
-
-## POST /verify
-
-Accepts a QR Code image.
-
-### Request
-
-```
-multipart/form-data
-field : file
-```
-
-### Response
-
-```json
+json
 {
-  "raw_data":"upi://pay?...",
-  "type":"upi",
-  "upi_info":{},
-  "trust_score":95,
-  "rating":"SAFE",
-  "checks":[],
-  "recommendation":"Looks safe."
+  "raw_data": "upi://pay?pa=merchant@axl&pn=Merchant&am=199&cu=INR",
+  "type": "upi",
+  "upi_info": {
+    "payment_address": "merchant@axl",
+    "payee_name": "Merchant",
+    "amount": "199",
+    "currency": "INR"
+  },
+  "url_safety": null,
+  "trust_score": 95,
+  "rating": "SAFE",
+  "checks": [
+    { "label": "Valid UPI format", "passed": true }
+  ],
+  "recommendation": "Looks good. You may proceed with this payment."
 }
-```
+POST /verify-screenshot
 
----
+Accepts a payment screenshot and returns an authenticity verdict.
 
-## POST /verify-screenshot
+Request: multipart/form-data — field: file
 
-Accepts a payment screenshot.
+Response:
 
-### Request
-
-```
-multipart/form-data
-field : file
-```
-
-### Response
-
-```json
+json
 {
-    "verdict":"LIKELY REAL",
-    "confidence":87,
-    "merchant":"Airtel",
-    "amount":"199",
-    "transaction_id":"CICAg...",
-    "upi_id":"airtelpay@...",
-    "app_detected":"Google Pay",
-    "date":"19 Jul 2026",
-    "time":"1:11 PM",
-    "checks":[]
+  "verdict": "LIKELY REAL",
+  "confidence": 87,
+  "merchant": "Airtel",
+  "amount": "199",
+  "transaction_id": "CICAg...",
+  "upi_id": "airtelpay@axl",
+  "app_detected": "Google Pay",
+  "date": "19 Jul 2026",
+  "time": "1:11 PM",
+  "checks": [
+    { "label": "Transaction ID found: CICAg...", "passed": true }
+  ],
+  "recommendation": "This screenshot appears to be a genuine payment receipt."
 }
-```
-
----
-
-# 🧪 Test Cases
-
-| Input | Expected Result |
-|---|---|
-| Merchant UPI QR | Successful UPI parsing |
-| PhonePe QR | Trust score generated |
-| Google Pay QR | Trust score generated |
-| Paytm QR | Trust score generated |
-| URL QR | URL safety analysis |
-| Plain Text QR | Classified as text |
-| Rotated QR | Successfully decoded |
-| Blurry QR | Decoder robustness test |
-| Google Pay Screenshot | OCR + verification |
-| PhonePe Screenshot | Merchant, amount & UPI detection |
-| Paytm Screenshot | Transaction verification |
-| Edited Screenshot | Flagged as suspicious |
-| Screenshot without Transaction ID | Lower confidence |
-
----
-
-# 🛠️ Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Backend | Python 3.12, FastAPI, Uvicorn |
-| QR Detection | OpenCV QRCodeDetector |
-| OCR Engine | EasyOCR |
-| Deep Learning | PyTorch |
-| Image Processing | OpenCV, NumPy, Pillow |
-| Frontend | HTML5, CSS3, Vanilla JavaScript |
-| API Style | REST API |
-
----
-
-# 📝 Notes
-
-- QR decoding uses OpenCV's built-in `QRCodeDetector`; no ZBar or `pyzbar` installation is required.
-- Payment screenshots are analyzed using **EasyOCR** with multiple image preprocessing techniques.
-- OCR extracts merchant name, payment amount, UPI ID, transaction ID, payment date and payment time.
-- Multiple preprocessing methods (grayscale conversion, thresholding, adaptive thresholding and sharpening) improve OCR accuracy.
-- Screenshot verification supports receipts from Google Pay, PhonePe, Paytm, BHIM, Amazon Pay and Razorpay.
-- Frontend communicates with the FastAPI backend using REST APIs.
-- The older Flask version is deprecated and no longer maintained.
-- Environment-specific configuration can be managed using the `.env` file.
-
----
-
-# 🤝 Contributing
-
-```bash
+🧪 Test Cases
+Input	Expected Result
+Merchant UPI QR	Full UPI parsing + trust score
+PhonePe / GPay / Paytm QR	Trust score with VPA verification
+URL QR	URL safety analysis triggered
+Plain Text QR	Classified as text, neutral score
+Rotated QR (90°/180°/270°)	Successfully decoded via rotation passes
+Blurry QR	Decoded via sharpening + upscaling
+Google Pay Screenshot	OCR + full verification
+PhonePe Screenshot	Merchant, amount & UPI detection
+Paytm Screenshot	Transaction ID + date/time extraction
+Edited / Fake Screenshot	Flagged as SUSPICIOUS or LIKELY FAKE
+Screenshot without Transaction ID	Lower confidence score
+🖥️ UI Tabs
+Tab	Description
+🔍 QR Verifier	Upload and verify QR code images
+🧾 Screenshot Checker	Upload and verify payment screenshots
+🕐 History	View last 50 scans with verdicts and details
+❓ FAQ	Common questions about QR fraud, quishing, and safe payments
+ℹ️ About	How the tool works, why it exists, and real fraud examples
+🛠️ Tech Stack
+Layer	Technology
+Backend	Python 3.12, FastAPI, Uvicorn
+QR Decoding	OpenCV QRCodeDetector (multi-pass)
+OCR Engine	EasyOCR
+Deep Learning	PyTorch (EasyOCR backend)
+Image Processing	OpenCV, NumPy, Pillow
+URL Safety	VirusTotal API, Google Safe Browsing API
+Frontend	HTML5, CSS3, Vanilla JavaScript
+Scan History	Browser localStorage (last 50 scans)
+API Style	REST (multipart/form-data)
+📝 Notes
+QR decoding uses OpenCV's built-in QRCodeDetector — no ZBar or pyzbar required.
+Screenshot verification uses EasyOCR with four preprocessing techniques: grayscale, Otsu thresholding, adaptive thresholding, and sharpening.
+Supports receipts from Google Pay, PhonePe, Paytm, BHIM, Amazon Pay, Mobikwik, and Razorpay.
+Scan history is stored entirely in the browser's localStorage — no data is sent to any external server.
+URL safety optionally integrates with VirusTotal and Google Safe Browsing when API keys are configured in .env.
+The older Flask version is deprecated and no longer maintained.
+🤝 Contributing
+bash
 git checkout -b feature/your-feature-name
 git commit -m "Add: your feature description"
 git push origin feature/your-feature-name
-```
-
-Open a Pull Request 🎉
-
----
-
+# Open a Pull Request 🎉
 <div align="center">
 
-⭐ **Star this repository if it helped you stay safe from QR payment fraud!**
+⭐ Star this repository if it helped you stay safe from QR payment fraud!
 
-**Scan Smart • Verify First • Pay Securely**
+Scan Smart • Verify First • Pay Securely
 
-Made with ❤️ using **FastAPI**, **OpenCV**, **EasyOCR**, and **Python**.
+Made with ❤️ using FastAPI • OpenCV • EasyOCR • Python
 
 </div>
