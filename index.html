@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR Pay Verifier</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="1" width="11" height="11" rx="2" stroke="currentColor" stroke-width="2"/>
+        <rect x="4" y="4" width="5" height="5" fill="currentColor"/>
+        <rect x="16" y="1" width="11" height="11" rx="2" stroke="currentColor" stroke-width="2"/>
+        <rect x="19" y="4" width="5" height="5" fill="currentColor"/>
+        <rect x="1" y="16" width="11" height="11" rx="2" stroke="currentColor" stroke-width="2"/>
+        <rect x="4" y="19" width="5" height="5" fill="currentColor"/>
+        <rect x="16" y="16" width="5" height="5" fill="currentColor"/>
+        <rect x="23" y="16" width="4" height="4" fill="currentColor"/>
+        <rect x="16" y="23" width="4" height="4" fill="currentColor"/>
+        <rect x="22" y="22" width="5" height="5" fill="currentColor"/>
+      </svg>
+      <span>QR Pay Verifier</span>
+    </div>
+    <p class="tagline">Verify before you pay. Every time.</p>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="qr">🔍 QR Verifier</button>
+      <button class="tab-btn" data-tab="screenshot">🧾 Screenshot Checker</button>
+      <button class="tab-btn" data-tab="history">🕐 History</button>
+      <button class="tab-btn" data-tab="faq">❓ FAQ</button>
+      <button class="tab-btn" data-tab="about">ℹ️ About</button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ── QR TAB ─────────────────────────────────────────── -->
+    <div id="tab-qr" class="tab-content active">
+
+      <section class="upload-section" id="uploadSection">
+        <div class="drop-zone" id="dropZone">
+          <div class="drop-icon">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <path d="M24 32V16M24 16L18 22M24 16L30 22" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M8 36C8 36 8 40 12 40H36C40 40 40 36 40 36" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <p class="drop-title">Drop your QR code image here</p>
+          <p class="drop-sub">or</p>
+          <label class="btn-upload" for="fileInput">Choose File</label>
+          <input type="file" id="fileInput" accept="image/*" hidden />
+          <p class="drop-formats">PNG, JPG, WEBP — max 10 MB</p>
+        </div>
+
+        <div class="preview-wrap" id="previewWrap" style="display:none;">
+          <img id="previewImg" alt="QR code preview" />
+          <button class="btn-clear" id="clearBtn">✕ Clear</button>
+        </div>
+
+        <button class="btn-verify" id="verifyBtn" disabled>Verify QR Code</button>
+      </section>
+
+      <div class="loader" id="loader" style="display:none;">
+        <div class="spinner"></div>
+        <p>Analysing QR code…</p>
+      </div>
+
+      <section class="result-section" id="resultSection" style="display:none;">
+        <div class="score-ring-wrap">
+          <svg class="score-ring" viewBox="0 0 120 120" width="120" height="120">
+            <circle class="ring-bg" cx="60" cy="60" r="52" />
+            <circle class="ring-fill" id="ringFill" cx="60" cy="60" r="52"
+              stroke-dasharray="326.7" stroke-dashoffset="326.7" />
+          </svg>
+          <div class="score-inner">
+            <span class="score-num" id="scoreNum">0</span>
+            <span class="score-label">/ 100</span>
+          </div>
+        </div>
+
+        <div class="rating-badge" id="ratingBadge">—</div>
+        <p class="recommendation" id="recommendation"></p>
+        <div class="details-grid" id="detailsGrid"></div>
+
+        <div class="checks-wrap">
+          <h3>Security Checks</h3>
+          <ul class="checks-list" id="checksList"></ul>
+        </div>
+
+        <details class="raw-wrap">
+          <summary>Raw QR Data</summary>
+          <pre id="rawData"></pre>
+        </details>
+
+        <button class="btn-again" id="scanAgainBtn">Scan Another</button>
+      </section>
+
+    </div>
+
+    <!-- ── SCREENSHOT TAB ─────────────────────────────────── -->
+    <div id="tab-screenshot" class="tab-content">
+
+      <section class="upload-section" id="ssUploadSection">
+        <div class="drop-zone" id="ssDropZone">
+          <div class="drop-icon">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <rect x="6" y="10" width="36" height="28" rx="3" stroke="currentColor" stroke-width="2.5"/>
+              <path d="M6 18h36" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="24" cy="30" r="5" stroke="currentColor" stroke-width="2.5"/>
+            </svg>
+          </div>
+          <p class="drop-title">Drop payment screenshot here</p>
+          <p class="drop-sub">or</p>
+          <label class="btn-upload" for="ssFileInput">Choose Screenshot</label>
+          <input type="file" id="ssFileInput" accept="image/*" hidden />
+          <p class="drop-formats">PNG, JPG, WEBP — PhonePe, GPay, Paytm etc.</p>
+        </div>
+
+        <div class="preview-wrap" id="ssPreviewWrap" style="display:none;">
+          <img id="ssPreviewImg" alt="Screenshot preview" />
+          <button class="btn-clear" id="ssClearBtn">✕ Clear</button>
+        </div>
+
+        <button class="btn-verify" id="ssVerifyBtn" disabled>Check Screenshot</button>
+      </section>
+
+      <div class="loader" id="ssLoader" style="display:none;">
+        <div class="spinner"></div>
+        <p>Scanning screenshot for fraud…</p>
+      </div>
+
+      <section class="result-section" id="ssResultSection" style="display:none;">
+
+        <!-- Verdict banner -->
+        <div class="verdict-banner" id="ssBanner">
+          <span class="verdict-icon" id="ssVerdictIcon">—</span>
+          <div>
+            <div class="verdict-title" id="ssVerdict">—</div>
+            <div class="verdict-sub" id="ssRecommendation"></div>
+          </div>
+        </div>
+
+        <!-- Extracted details -->
+        <div class="details-grid" id="ssDetailsGrid"></div>
+
+        <!-- Checks -->
+        <div class="checks-wrap">
+          <h3>Screenshot Analysis</h3>
+          <ul class="checks-list" id="ssChecksList"></ul>
+        </div>
+
+        <!-- Extracted text -->
+        <details class="raw-wrap">
+          <summary>Extracted Text (OCR)</summary>
+          <pre id="ssRawText"></pre>
+        </details>
+
+        <button class="btn-again" id="ssScanAgainBtn">Check Another</button>
+      </section>
+
+    </div>
+    <!-- ── HISTORY TAB ────────────────────────────────────────── -->
+    <div id="tab-history" class="tab-content">
+      <div class="history-wrap">
+
+        <div class="history-header">
+          <div>
+            <h2>Scan History</h2>
+            <p class="history-sub">Your last 50 scans — stored locally on your device.</p>
+          </div>
+          <button class="btn-clear-history" id="clearHistoryBtn">🗑 Clear All</button>
+        </div>
+
+        <div id="historyEmpty" class="history-empty" style="display:none;">
+          <div class="history-empty-icon">📭</div>
+          <p>No scans yet. Verify a QR code or screenshot to see history here.</p>
+        </div>
+
+        <div class="history-list" id="historyList"></div>
+
+      </div>
+    </div>
+    <!-- ── FAQ TAB ─────────────────────────────────────────── -->
+    <div id="tab-faq" class="tab-content">
+      <div class="faq-wrap">
+
+        <div class="faq-header">
+          <h2>Frequently Asked Questions</h2>
+          <p>Everything you need to know about QR payment safety and this tool.</p>
+        </div>
+
+        <div class="faq-list">
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Why should I verify a QR code before making a payment?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>QR codes are just encoded text — anyone can create one. Scammers frequently replace legitimate merchant QR codes with their own, so when you scan and pay, the money goes to the fraudster instead of the actual merchant. By verifying a QR code before paying, you confirm that the UPI ID, payee name, and amount are genuine and match who you intend to pay. A 5-second check can save you from losing money with no way to recover it.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Why do payment screenshots need to be checked?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>Payment screenshots are trivially easy to fake. Anyone can edit a screenshot using basic photo editing tools to change the amount, payee name, or status. Merchants who accept screenshots as proof of payment without verification risk releasing goods or services without ever receiving the actual money. Our screenshot checker uses OCR to extract text, verifies transaction IDs, detects known UPI app signatures, and flags low-quality or edited images — giving merchants a reliable second opinion before they act on a receipt.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>What is Quishing?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>Quishing (QR code phishing) is a cyberattack where scammers embed malicious URLs inside QR codes. When you scan the code, instead of going to a legitimate payment page, you are redirected to a fake website designed to steal your UPI PIN, bank credentials, or personal information. Quishing is particularly dangerous because most QR scanner apps do not display the full URL before redirecting you. Our tool decodes the QR first and checks the embedded URL against offline heuristics, VirusTotal, and Google Safe Browsing before you visit anything.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>What is QR code swapping fraud?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>QR code swapping is one of the most common forms of payment fraud in India. A scammer visits a shop, restaurant, or stall and sticks their own QR code printout over the merchant's original one. Customers unknowingly scan the fake code and pay the scammer. The merchant receives no payment but believes they have. This type of fraud is nearly impossible to detect with the naked eye — which is exactly why verifying the payee name and UPI ID in the QR before paying is critical.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Can I recover money sent to a fraudulent UPI ID?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>UPI transactions are near-instantaneous and generally irreversible. Once money leaves your account to a fraudulent UPI ID, recovery is extremely difficult. You can file a complaint with your bank or on the NPCI Dispute Redressal Portal, but outcomes are not guaranteed and the process can take weeks. The only reliable protection is prevention — verifying a QR code before paying takes seconds and eliminates this risk entirely.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>What is a Trust Score?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>The Trust Score is a number between 0 and 100 that represents how safe a QR code appears based on multiple security checks. A score of 80–100 is SAFE, 50–79 is WARNING, and 0–49 is DANGEROUS. It is calculated by evaluating factors such as whether the UPI ID format is valid, whether the payee name is present, whether the VPA suffix belongs to a known bank or wallet, whether the embedded URL is clean, and whether the transaction amount appears unusual. The score gives you a quick, at-a-glance indication of risk.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Does this tool store my QR code or screenshot data?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>No. The tool runs entirely on your local machine. Your QR code images and payment screenshots are sent only to the backend server running on your own device (127.0.0.1) and are never uploaded to any external server or stored permanently. If URL checking is enabled with API keys, only the URL string (not your image) is sent to VirusTotal or Google Safe Browsing for analysis.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>What UPI apps does the screenshot checker support?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>The screenshot checker can detect receipts from Google Pay, PhonePe, Paytm, BHIM, Amazon Pay, Mobikwik, and Razorpay. It looks for app-specific branding, transaction ID formats, and layout patterns unique to each platform. If the app is not detected, the system still attempts to extract transaction details and gives a confidence score based on what it finds.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>What does SUSPICIOUS verdict mean?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>A SUSPICIOUS verdict means the system could not fully verify the QR code or screenshot, but also could not confirm it is safe. This usually happens when some expected elements — like a transaction ID, payee name, or known app signature — are missing or unclear. In this case, you should ask the payer to share the UPI transaction reference number directly from their bank app, or verify the QR code payee details manually before proceeding.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Is a SAFE result a 100% guarantee?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>No. A SAFE result means the QR code or screenshot passed all the automated checks this system performs, but it is not an absolute guarantee of legitimacy. Always cross-check the payee name shown in your payment app against who you intend to pay, and never enter your UPI PIN on any website. This tool is designed to significantly reduce your risk, not replace your own judgment entirely.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ABOUT TAB ───────────────────────────────────────── -->
+    <div id="tab-about" class="tab-content">
+      <div class="about-wrap">
+
+        <div class="about-hero">
+          <div class="about-hero-icon">🔐</div>
+          <h2>About QR Pay Verifier</h2>
+          <p>A security tool built to fight payment fraud before it happens.</p>
+        </div>
+
+        <div class="about-section">
+          <h3>Why this project exists</h3>
+          <p>India processes over 10 billion UPI transactions every month. With this scale comes an explosion of QR-based payment fraud — fake QR codes placed over legitimate ones, malicious URLs hidden inside payment codes, and fabricated payment screenshots used to deceive merchants. Existing UPI apps do not verify QR codes before you pay, and they offer no way for merchants to authenticate a payment screenshot. QR Pay Verifier was built to fill this gap.</p>
+        </div>
+
+        <div class="about-section">
+          <h3>How it works</h3>
+          <div class="how-grid">
+            <div class="how-card">
+              <div class="how-icon">📷</div>
+              <div class="how-title">Upload</div>
+              <div class="how-desc">Upload any QR code image or payment screenshot from your device.</div>
+            </div>
+            <div class="how-card">
+              <div class="how-icon">🧩</div>
+              <div class="how-title">Decode</div>
+              <div class="how-desc">OpenCV decodes the QR using multiple preprocessing passes. EasyOCR extracts text from screenshots.</div>
+            </div>
+            <div class="how-card">
+              <div class="how-icon">🕵️</div>
+              <div class="how-title">Analyze</div>
+              <div class="how-desc">UPI details, URLs, transaction IDs, payee names, and app signatures are verified against fraud patterns.</div>
+            </div>
+            <div class="how-card">
+              <div class="how-icon">🚦</div>
+              <div class="how-title">Verdict</div>
+              <div class="how-desc">You receive a Trust Score, a SAFE / WARNING / DANGEROUS rating, and a clear recommendation.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="about-section">
+          <h3>What happens if you don't verify</h3>
+          <div class="risk-list">
+            <div class="risk-card danger">
+              <div class="risk-icon">💸</div>
+              <div class="risk-content">
+                <div class="risk-title">Money sent to wrong UPI ID</div>
+                <div class="risk-desc">A swapped QR code at a petrol pump, tea stall, or shop silently redirects your payment. The merchant gets nothing. You lose the money. UPI transfers are instant and almost never reversible.</div>
+              </div>
+            </div>
+            <div class="risk-card danger">
+              <div class="risk-icon">🖼️</div>
+              <div class="risk-content">
+                <div class="risk-title">Accepting a fake payment screenshot</div>
+                <div class="risk-desc">A buyer sends you an edited screenshot showing ₹5,000 paid. You release the product. No money ever arrives in your account. By the time you realize, the buyer is unreachable.</div>
+              </div>
+            </div>
+            <div class="risk-card danger">
+              <div class="risk-icon">🎣</div>
+              <div class="risk-content">
+                <div class="risk-title">Quishing — phishing via QR code</div>
+                <div class="risk-desc">You scan a QR code on a poster, menu, or parking meter. Instead of a payment page, you land on a fake bank login site that steals your credentials and empties your account.</div>
+              </div>
+            </div>
+            <div class="risk-card warn">
+              <div class="risk-icon">⏳</div>
+              <div class="risk-content">
+                <div class="risk-title">No guaranteed way to recover funds</div>
+                <div class="risk-desc">Complaint resolution through NPCI or your bank can take weeks with no guaranteed outcome. Prevention is the only reliable protection.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="about-section">
+          <h3>Real-world examples of this fraud</h3>
+          <div class="example-list">
+            <div class="example-card">
+              <div class="example-tag">QR Swap Fraud</div>
+              <p>In 2023, police in Bengaluru busted a gang that had systematically replaced QR codes at over 200 small shops across the city, redirecting payments for months before being caught. Merchants collectively lost lakhs of rupees.</p>
+            </div>
+            <div class="example-card">
+              <div class="example-tag">Fake Screenshot Fraud</div>
+              <p>A common scam on OLX and Facebook Marketplace involves buyers sending fake Paytm or GPay screenshots for second-hand goods. Sellers ship items believing payment was made. The screenshots are edited images with no actual transaction behind them.</p>
+            </div>
+            <div class="example-card">
+              <div class="example-tag">Quishing Attack</div>
+              <p>Fraudulent QR codes were found pasted on parking meters in several Indian cities, redirecting users to fake payment portals that harvested UPI PINs and bank credentials instead of processing parking fees.</p>
+            </div>
+            <div class="example-card">
+              <div class="example-tag">UPI Overpayment Scam</div>
+              <p>Scammers send a "request to pay" QR code instead of a payment QR, tricking victims into scanning it and unknowingly sending money rather than receiving it — a fraud that specifically targets people selling items online.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="about-section">
+          <h3>Tech stack</h3>
+          <div class="tech-grid">
+            <div class="tech-badge">Python 3.12</div>
+            <div class="tech-badge">FastAPI</div>
+            <div class="tech-badge">OpenCV</div>
+            <div class="tech-badge">EasyOCR</div>
+            <div class="tech-badge">VirusTotal API</div>
+            <div class="tech-badge">Google Safe Browsing</div>
+            <div class="tech-badge">HTML5</div>
+            <div class="tech-badge">CSS3</div>
+            <div class="tech-badge">Vanilla JS</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    
+  </main>
+
+  <footer>
+    <p>Results are indicative. Always confirm payee details independently.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
