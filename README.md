@@ -78,8 +78,7 @@ QR Code-Based Secure Payment Verification/
 │   ├── index.html               # UI (QR, Screenshot, History, FAQ, About)
 │   ├── reqt.txt                 # Python dependencies
 │   └── venv/                    # Virtual environment
-│
-└── (Older Flask version — deprecated, not used)
+
 ```
 
 ---
